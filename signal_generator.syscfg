@@ -1,0 +1,46 @@
+/**
+ * These arguments were used when this file was generated. They will be automatically applied on subsequent loads
+ * via the GUI or CLI. Run CLI with '--help' for additional information on how to override these arguments.
+ * @cliArgs --device "MSPM0L130X" --part "Default" --package "VQFN-32(RHB)" --product "mspm0_sdk@2.03.00.08"
+ * @v2CliArgs --device "MSPM0L1306" --package "VQFN-32(RHB)" --product "mspm0_sdk@2.03.00.08"
+ * @versions {"tool":"1.22.0+3893"}
+ */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const GPIO   = scripting.addModule("/ti/driverlib/GPIO", {}, false);
+const GPIO1  = GPIO.addInstance();
+const SYSCTL = scripting.addModule("/ti/driverlib/SYSCTL");
+const TIMER  = scripting.addModule("/ti/driverlib/TIMER", {}, false);
+const TIMER1 = TIMER.addInstance();
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+GPIO1.$name                         = "GPIO_LED";
+GPIO1.port                          = "PORTA";
+GPIO1.associatedPins[0].assignedPin = "7";
+GPIO1.associatedPins[0].$name       = "STATUS";
+
+const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
+
+
+TIMER1.$name              = "TIMER_DAC";
+TIMER1.timerClkSrc        = "LFCLK";
+TIMER1.timerClkPrescale   = 33;
+TIMER1.timerMode          = "PERIODIC";
+TIMER1.timerPeriod        = "500 ms";
+TIMER1.interrupts         = ["ZERO"];
+TIMER1.peripheral.$assign = "TIMG0";
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+GPIO1.associatedPins[0].pin.$suggestSolution = "PA7";
+Board.peripheral.$suggestSolution            = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution   = "PA20";
+Board.peripheral.swdioPin.$suggestSolution   = "PA19";
+SYSCTL.peripheral.$suggestSolution           = "SYSCTL";

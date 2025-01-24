@@ -1,3 +1,11 @@
+.clangd
+.ccsproject
+.settings/
+.cproject
+.project
+.theia
+Debug/
+
 # Prerequisites
 *.d
 
