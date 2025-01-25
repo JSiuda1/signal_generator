@@ -4,14 +4,20 @@
 #include "ti/driverlib/m0p/sysctl/dl_sysctl_mspm0l11xx_l13xx.h"
 #include "ti_msp_dl_config.h"
 
+// THESE VALUES SHOULD BE CALCULATED BASED ON THE GENERATED CONFIG
+// but this should work until we change the timer settings.
+#define TIMER_MIN_TIME_US 10
+#define TIMER_MAX_TIME_US 650000
+#define TIME_US_TO_COUNTS_DIV 10
+
 static struct {
     on_timer_callback timer_callback;
     bool is_running;
-    uint32_t time_us;
+    uint32_t timer_counts;
 } _tim = {
     .timer_callback = NULL,
     .is_running = false,
-    .time_us = 0,
+    .timer_counts = 0,
 };
 
 bool TIMER_DAC_init(on_timer_callback callback) {
@@ -26,10 +32,17 @@ bool TIMER_DAC_init(on_timer_callback callback) {
     return true;
 }
 
-void TIMER_DAC_start(uint32_t time_us) {
-    // TODO: calculate time_us to counts
-    _tim.time_us = time_us;
+bool TIMER_DAC_start(uint32_t time_us) {
+    if (time_us < TIMER_MIN_TIME_US || time_us > TIMER_MAX_TIME_US) {
+        return false;
+    }
+
+    // Timer clock frequency is set to 100kHz -> 10us - 1 count
+    _tim.timer_counts = time_us / TIME_US_TO_COUNTS_DIV;
+
     DL_TimerG_startCounter(TIMER_DAC_INST);
+
+    return  true;
 }
 
 void TIMER_DAC_stop() {
@@ -38,7 +51,7 @@ void TIMER_DAC_stop() {
 
 static void _on_timer_interrupt() {
     DL_TimerG_stopCounter(TIMER_DAC_INST);
-    DL_Timer_setLoadValue(TIMER_DAC_INST, _tim.time_us);
+    DL_Timer_setLoadValue(TIMER_DAC_INST, _tim.timer_counts);
     DL_TimerG_startCounter(TIMER_DAC_INST);
 
     if (_tim.timer_callback != NULL) {
