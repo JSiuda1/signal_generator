@@ -32,6 +32,7 @@ int main(void) {
     SIG_DAC_init(&sig_dac, &cfg);
 
     TIMER_DAC_init(on_dac_timer);
+    // Buffer size is 100, so the signal frequency is time_us / BUFFER_SIZE
     TIMER_DAC_start(500000);
 
     while (1) {
