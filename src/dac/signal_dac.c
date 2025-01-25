@@ -9,6 +9,22 @@ static void sig_sinus(float *normalized_singal, size_t buffer_size) {
     }
 }
 
+static void sig_triangle(float *normalized_singal, size_t buffer_size) {
+
+    for (int i = 0; i < buffer_size/2; ++i) {
+        normalized_singal[i] = (i/buffer_size)/1.0;
+    }
+    for (int i = 0; i <= buffer_size/2; ++i) {
+        normalized_singal[buffer_size-1-i] = (i/buffer_size)/1.0;
+    }
+}
+
+static void sig_saw(float *normalized_singal, size_t buffer_size) {
+    for (int i = 0; i < buffer_size; ++i) {
+        normalized_singal[i] = (i/buffer_size)/ 2.0;
+    }
+}
+
 static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
     // As lon as the sig_dac and normalzied_signal has size of SIG_DAC_BUFFER_SIZE
     // we don't have to check if they have the same size.

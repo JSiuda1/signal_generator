@@ -1,4 +1,5 @@
 #include "ti/driverlib/dl_gpio.h"
+#include "ti/driverlib/dl_spi.h"
 #include "ti/driverlib/dl_timerg.h"
 #include "ti/driverlib/m0p/dl_core.h"
 #include "ti/driverlib/m0p/sysctl/dl_sysctl_mspm0l11xx_l13xx.h"
@@ -34,7 +35,8 @@ int main(void) {
     TIMER_DAC_init(on_dac_timer);
     // Buffer size is 100, so the signal frequency is time_us / BUFFER_SIZE
     TIMER_DAC_start(500000);
-
+    uint16_t potVal = 0b1111110010000000;
+    DL_SPI_transmitData8(SPI_0_INST, potVal);
     while (1) {
         __WFI();
     }
