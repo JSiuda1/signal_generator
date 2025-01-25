@@ -11,17 +11,17 @@ static void sig_sinus(float *normalized_singal, size_t buffer_size) {
 
 static void sig_triangle(float *normalized_singal, size_t buffer_size) {
 
-    for (int i = 0; i < buffer_size/2; ++i) {
-        normalized_singal[i] = (i/buffer_size)/1.0;
-    }
     for (int i = 0; i <= buffer_size/2; ++i) {
-        normalized_singal[buffer_size-1-i] = (i/buffer_size)/1.0;
+        normalized_singal[i] = ((1.0*i)/buffer_size)/1.0;
+    }
+    for (int i = 0; i < buffer_size/2; ++i) {
+        normalized_singal[buffer_size-1-i] = ((1.0*i+1)/buffer_size)/1.0;
     }
 }
 
 static void sig_saw(float *normalized_singal, size_t buffer_size) {
     for (int i = 0; i < buffer_size; ++i) {
-        normalized_singal[i] = (i/buffer_size)/ 2.0;
+        normalized_singal[i] = ((1.0*i)/buffer_size)/ 1.0;
     }
 }
 

@@ -35,8 +35,10 @@ int main(void) {
     TIMER_DAC_init(on_dac_timer);
     // Buffer size is 100, so the signal frequency is time_us / BUFFER_SIZE
     TIMER_DAC_start(500000);
-    uint16_t potVal = 0b1111110010000000;
-    DL_SPI_transmitData8(SPI_0_INST, potVal);
+    uint16_t command = 252;
+    uint16_t potVal = 127;
+    uint16_t data = (command<<8)|potVal;
+    DL_SPI_transmitData8(SPI_0_INST, data);
     while (1) {
         __WFI();
     }
