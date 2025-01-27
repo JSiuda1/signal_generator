@@ -8,7 +8,8 @@
 
 typedef enum {
     SIG_UNKNOWN,
-    SIG_SIN
+    SIG_SIN,
+    SIG_RECT
 } SIG_DAC_type_t;
 
 typedef struct {

@@ -9,6 +9,16 @@ static void sig_sinus(float *normalized_singal, size_t buffer_size) {
     }
 }
 
+static void sig_rect(float *normalized_signal, size_t buffer_size) {
+    for (int i = 0; i < buffer_size; ++i) {
+        if (i <(buffer_size / 2)) {
+            normalized_signal[i] = 1; 
+        } else {
+            normalized_signal[i] = 0;
+        }
+    }
+}
+
 static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
     // As lon as the sig_dac and normalzied_signal has size of SIG_DAC_BUFFER_SIZE
     // we don't have to check if they have the same size.
@@ -26,6 +36,9 @@ static bool generate_signal(SIG_DAC_t *sig_dac) {
     switch (sig_dac->signal_type) {
         case SIG_SIN:
             sig_sinus(normalized_singal, SIG_DAC_BUFFER_SIZE);
+            break;
+        case SIG_RECT:
+            sig_rect(normalized_singal, SIG_DAC_BUFFER_SIZE);
             break;
         default:
             return false;
