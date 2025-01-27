@@ -13,11 +13,14 @@ SIG_DAC_t sig_dac;
 void on_dac_timer(void) {
     DL_GPIO_togglePins(GPIO_LED_PORT, GPIO_LED_STATUS_PIN);
 
+    // Not working due to the problems with GPIO MASK
     // uint32_t val = SIG_DAC_get_current_value(&sig_dac);
     // SIG_DAC_move_to_next(&sig_dac);
     // int val = 0b01010101;
     // DL_GPIO_writePinsVal(GPIO_DAC_PORT,  DAC_PIN_MASK, val << 11);
-    // DL_GPIO_togglePins(GPIO_DAC_PORT, DAC_PIN_MASK);
+
+    // Generate a square wave signal, comment this line to do not generate the signal -> gpio set to 0
+    // DL_GPIO_togglePins(GPIO_DAC_PORT, DAC_PIN_MASK); //
 
 }
 
@@ -31,7 +34,7 @@ int main(void) {
     };
 
     SIG_DAC_init(&sig_dac, &cfg);
-    DL_GPIO_clearPins(GPIO_DAC_PORT, DAC_PIN_MASK);
+    DL_GPIO_clearPins(GPIO_DAC_PORT, DAC_PIN_MASK); // Clear all pins before starting the timer
     TIMER_DAC_init(on_dac_timer);
     // Buffer size is 100, so the signal frequency is time_us / BUFFER_SIZE
     TIMER_DAC_start(500);
