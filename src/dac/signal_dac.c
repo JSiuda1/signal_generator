@@ -9,19 +9,13 @@ static void sig_sinus(float *normalized_singal, size_t buffer_size) {
     }
 }
 
-static void sig_triangle(float *normalized_singal, size_t buffer_size) {
-
-    for (int i = 0; i <= buffer_size/2; ++i) {
-        normalized_singal[i] = ((1.0*i)/buffer_size)/1.0;
-    }
-    for (int i = 0; i < buffer_size/2; ++i) {
-        normalized_singal[buffer_size-1-i] = ((1.0*i+1)/buffer_size)/1.0;
-    }
-}
-
-static void sig_saw(float *normalized_singal, size_t buffer_size) {
+static void sig_rect(float *normalized_signal, size_t buffer_size) {
     for (int i = 0; i < buffer_size; ++i) {
-        normalized_singal[i] = ((1.0*i)/buffer_size)/ 1.0;
+        if (i <(buffer_size / 2)) {
+            normalized_signal[i] = 1; 
+        } else {
+            normalized_signal[i] = 0;
+        }
     }
 }
 
@@ -42,6 +36,9 @@ static bool generate_signal(SIG_DAC_t *sig_dac) {
     switch (sig_dac->signal_type) {
         case SIG_SIN:
             sig_sinus(normalized_singal, SIG_DAC_BUFFER_SIZE);
+            break;
+        case SIG_RECT:
+            sig_rect(normalized_singal, SIG_DAC_BUFFER_SIZE);
             break;
         default:
             return false;
