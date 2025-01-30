@@ -10,6 +10,8 @@ SIG_DAC_t sig_dac;
 #define DAC_PIN_MASK GPIO_DAC_B0_PIN | GPIO_DAC_B1_PIN | GPIO_DAC_B2_PIN | GPIO_DAC_B3_PIN | \
                      GPIO_DAC_B4_PIN | GPIO_DAC_B5_PIN | GPIO_DAC_B6_PIN | GPIO_DAC_B7_PIN
 
+int menuPosition = 0;
+
 void on_dac_timer(void) {
     DL_GPIO_togglePins(GPIO_LED_PORT, GPIO_LED_STATUS_PIN);
 
@@ -26,6 +28,7 @@ void on_dac_timer(void) {
 
 int main(void) {
     SYSCFG_DL_init();
+    NVIC_EnableIRQ(GPIO_MULTIPLE_GPIOA_INT_IRQN);
 
     SIG_DAC_config_t cfg = {
         .lower_range = 0,
@@ -42,4 +45,40 @@ int main(void) {
     while (1) {
         __WFI();
     }
+}
+
+void GROUP1_IRQHandler(void){
+
+    switch (DL_Interrupt_getPendingGroup(DL_INTERRUPT_GROUP_1)){
+
+        case ENCODER_ENC_A_IIDX:
+        if(DL_GPIO_readPins(ENCODER_PORT, ENCODER_ENC_A_PIN)){
+            
+        }
+
+        case  ENCODER_ENC_B_IIDX:
+        if(DL_GPIO_readPins(ENCODER_PORT, ENCODER_ENC_B_PIN)){
+            
+        }
+
+        case ENCODER_ENC_C_IIDX:
+        if(DL_GPIO_readPins(ENCODER_PORT, ENCODER_ENC_C_PIN)){
+            
+        }
+
+        case BTNL_BTN_L_IIDX:
+        if(DL_GPIO_readPins(BTNL_PORT, BTNL_BTN_L_PIN)){
+            
+        }
+
+        case BTNR_BTN_R_IIDX:
+        if(DL_GPIO_readPins(BTNR_PORT, BTNR_BTN_R_PIN)){
+            
+        }
+
+        break;
+
+    }
+
+
 }

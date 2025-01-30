@@ -1,11 +1,17 @@
 #include "signal_dac.h"
 #include <math.h>
 
-static void sig_sinus(float *normalized_singal, size_t buffer_size) {
+
+
+
+
+
+
+static void sig_sinus(float *normalized_signal, size_t buffer_size) {
     float rad_step = 2 * 3.14 / SIG_DAC_BUFFER_SIZE;
 
     for (int i = 0; i < buffer_size; ++i) {
-        normalized_singal[i] = (sin(rad_step * i) + 1) / 2.0;
+        normalized_signal[i] = (sin(rad_step * i) + 1) / 2.0;
     }
 }
 
@@ -19,8 +25,32 @@ static void sig_rect(float *normalized_signal, size_t buffer_size) {
     }
 }
 
+static void sig_tri(float *normalized_signal, size_t buffer_size){
+
+    for(int i = 0; i<buffer_size; ++i){
+    if(i<buffer_size/2){
+        normalized_signal[i] = (i*2.0)/buffer_size;
+    } else{
+        normalized_signal[i] = (1.0 - ((i-buffer_size/2)*2.0)/buffer_size);
+    }
+    }
+
+}
+
+
+static void sig_saw(float *normalized_signal, size_t buffer_size){
+
+    for (int i = 0; i < buffer_size; ++i) {
+        normalized_signal[i] = ((i+1)*1.0)/buffer_size;
+    }
+
+}
+
+
+
+
 static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
-    // As lon as the sig_dac and normalzied_signal has size of SIG_DAC_BUFFER_SIZE
+    // As long as the sig_dac and normalzied_signal has size of SIG_DAC_BUFFER_SIZE
     // we don't have to check if they have the same size.
 
     for (int i = 0; i < SIG_DAC_BUFFER_SIZE; ++i) {
@@ -31,20 +61,26 @@ static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
 }
 
 static bool generate_signal(SIG_DAC_t *sig_dac) {
-    float normalized_singal[SIG_DAC_BUFFER_SIZE];
+    float normalized_signal[SIG_DAC_BUFFER_SIZE];
 
     switch (sig_dac->signal_type) {
         case SIG_SIN:
-            sig_sinus(normalized_singal, SIG_DAC_BUFFER_SIZE);
+            sig_sinus(normalized_signal, SIG_DAC_BUFFER_SIZE);
             break;
         case SIG_RECT:
-            sig_rect(normalized_singal, SIG_DAC_BUFFER_SIZE);
+            sig_rect(normalized_signal, SIG_DAC_BUFFER_SIZE);
+            break;
+        case SIG_TRI:
+            sig_tri(normalized_signal, SIG_DAC_BUFFER_SIZE);
+            break;
+        case SIG_SAW:
+            sig_saw(normalized_signal, SIG_DAC_BUFFER_SIZE);
             break;
         default:
             return false;
     }
 
-    save_dac_signal(sig_dac, normalized_singal);
+    save_dac_signal(sig_dac, normalized_signal);
 
     return true;
 }
