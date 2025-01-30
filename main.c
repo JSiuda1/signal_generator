@@ -13,7 +13,10 @@ SIG_DAC_t sig_dac;
 
 volatile uint32_t led_val = 0;
 
-int menuPosition = 0;
+int currentItem = 0;
+char menuItems[3][10]={'shape',
+                        'frequency',
+                        'amplitude'};
 
 void on_dac_timer(void) {
     uint32_t val = SIG_DAC_get_current_value(&sig_dac);
@@ -28,7 +31,7 @@ int main(void) {
     SIG_DAC_config_t cfg = {
         .lower_range = 0,
         .upper_range = 255,
-        .sig_gen = SIG_SAWTOOTH,
+        .signal_type = SIG_SIN,
     };
 
     SIG_DAC_init(&sig_dac, &cfg);
