@@ -1,24 +1,6 @@
 #include "signal_dac.h"
 #include <math.h>
 
-static void sig_sinus(float *normalized_singal, size_t buffer_size) {
-    float rad_step = 2 * 3.14 / SIG_DAC_BUFFER_SIZE;
-
-    for (int i = 0; i < buffer_size; ++i) {
-        normalized_singal[i] = (sin(rad_step * i) + 1) / 2.0;
-    }
-}
-
-static void sig_rect(float *normalized_signal, size_t buffer_size) {
-    for (int i = 0; i < buffer_size; ++i) {
-        if (i <(buffer_size / 2)) {
-            normalized_signal[i] = 1; 
-        } else {
-            normalized_signal[i] = 0;
-        }
-    }
-}
-
 static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
     // As lon as the sig_dac and normalzied_signal has size of SIG_DAC_BUFFER_SIZE
     // we don't have to check if they have the same size.
@@ -33,22 +15,11 @@ static void save_dac_signal(SIG_DAC_t *sig_dac, float *normalized_signal) {
 static bool generate_signal(SIG_DAC_t *sig_dac) {
     float normalized_singal[SIG_DAC_BUFFER_SIZE];
 
-    switch (sig_dac->signal_type) {
-        case SIG_SIN:
-            sig_sinus(normalized_singal, SIG_DAC_BUFFER_SIZE);
-            break;
-        case SIG_RECT:
-            sig_rect(normalized_singal, SIG_DAC_BUFFER_SIZE);
-            break;
-        default:
-            return false;
-    }
-
+    sig_dac->sig_gen(normalized_singal, SIG_DAC_BUFFER_SIZE);
     save_dac_signal(sig_dac, normalized_singal);
 
     return true;
 }
-
 
 
 bool SIG_DAC_init(SIG_DAC_t *sig_dac, SIG_DAC_config_t *cfg) {
@@ -60,11 +31,11 @@ bool SIG_DAC_init(SIG_DAC_t *sig_dac, SIG_DAC_config_t *cfg) {
         return false;
     }
 
-    if (cfg->signal_type == SIG_UNKNOWN) {
+    if (cfg->sig_gen == NULL) {
         return false;
     }
 
-    sig_dac->signal_type = cfg->signal_type;
+    sig_dac->sig_gen = cfg->sig_gen;
     sig_dac->lower_range = cfg->lower_range;
     sig_dac->upper_range = cfg->upper_range;
 
@@ -125,16 +96,16 @@ bool SIG_DAC_change_lower_range(SIG_DAC_t *sig_dac, uint8_t lower_range) {
     return true;
 }
 
-bool SIG_DAC_change_signal(SIG_DAC_t *sig_dac, SIG_DAC_type_t sig_type) {
+bool SIG_DAC_change_signal(SIG_DAC_t *sig_dac, SIG_DAC_generator sig_gen) {
     if (sig_dac == NULL) {
         return false;
     }
 
-    if (sig_type == SIG_UNKNOWN) {
+    if (sig_gen == NULL) {
         return false;
     }
 
-    sig_dac->signal_type = sig_type;
+    sig_dac->sig_gen = sig_gen;
     if (generate_signal(sig_dac) == false) {
         return false;
     }

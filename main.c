@@ -1,27 +1,22 @@
 #include "ti/driverlib/dl_gpio.h"
 #include "ti/driverlib/dl_timerg.h"
 #include "ti/driverlib/m0p/dl_core.h"
-#include "ti/driverlib/m0p/sysctl/dl_sysctl_mspm0l11xx_l13xx.h"
 #include "ti_msp_dl_config.h"
 #include "src/hardware/timer_dac.h"
 #include "src/dac/signal_dac.h"
+#include "src/dac/signals.h "
 
 SIG_DAC_t sig_dac;
 #define DAC_PIN_MASK GPIO_DAC_B0_PIN | GPIO_DAC_B1_PIN | GPIO_DAC_B2_PIN | GPIO_DAC_B3_PIN | \
                      GPIO_DAC_B4_PIN | GPIO_DAC_B5_PIN | GPIO_DAC_B6_PIN | GPIO_DAC_B7_PIN
+#define DAC_PIN_VAL_OFFSET 11
+
+volatile uint32_t led_val = 0;
 
 void on_dac_timer(void) {
-    DL_GPIO_togglePins(GPIO_LED_PORT, GPIO_LED_STATUS_PIN);
-
-    // Not working due to the problems with GPIO MASK
-    // uint32_t val = SIG_DAC_get_current_value(&sig_dac);
-    // SIG_DAC_move_to_next(&sig_dac);
-    // int val = 0b01010101;
-    // DL_GPIO_writePinsVal(GPIO_DAC_PORT,  DAC_PIN_MASK, val << 11);
-
-    // Generate a square wave signal, comment this line to do not generate the signal -> gpio set to 0
-    // DL_GPIO_togglePins(GPIO_DAC_PORT, DAC_PIN_MASK); //
-
+    uint32_t val = SIG_DAC_get_current_value(&sig_dac);
+    SIG_DAC_move_to_next(&sig_dac);
+    DL_GPIO_writePinsVal(GPIO_DAC_PORT,  DAC_PIN_MASK, val << DAC_PIN_VAL_OFFSET);
 }
 
 int main(void) {
@@ -30,7 +25,7 @@ int main(void) {
     SIG_DAC_config_t cfg = {
         .lower_range = 0,
         .upper_range = 255,
-        .signal_type = SIG_RECT,
+        .sig_gen = SIG_SAWTOOTH,
     };
 
     SIG_DAC_init(&sig_dac, &cfg);

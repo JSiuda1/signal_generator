@@ -3,17 +3,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #define SIG_DAC_BUFFER_SIZE 100
 
-typedef enum {
-    SIG_UNKNOWN,
-    SIG_SIN,
-    SIG_RECT
-} SIG_DAC_type_t;
+typedef void(*SIG_DAC_generator)(float *norm_buffer, size_t buffer_size);
 
 typedef struct {
-    SIG_DAC_type_t signal_type;
+    SIG_DAC_generator sig_gen;
     uint8_t upper_range;
     uint8_t lower_range;
     uint8_t buffer[SIG_DAC_BUFFER_SIZE];
@@ -21,7 +18,7 @@ typedef struct {
 } SIG_DAC_t;
 
 typedef struct {
-    SIG_DAC_type_t signal_type;
+    SIG_DAC_generator sig_gen;
     uint8_t upper_range;
     uint8_t lower_range;
 } SIG_DAC_config_t;
@@ -36,6 +33,6 @@ bool SIG_DAC_change_upper_range(SIG_DAC_t *sig_dac, uint8_t upper_range);
 
 bool SIG_DAC_change_lower_range(SIG_DAC_t *sig_dac, uint8_t lower_range);
 
-bool SIG_DAC_change_signal(SIG_DAC_t *sig_dac, SIG_DAC_type_t sig_type);
+bool SIG_DAC_change_signal(SIG_DAC_t *sig_dac, SIG_DAC_generator sig_gen);
 
 #endif
