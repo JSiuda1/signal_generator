@@ -26,7 +26,6 @@ bool TIMER_DAC_init(on_timer_callback callback) {
     }
 
     NVIC_EnableIRQ(TIMER_DAC_INST_INT_IRQN);
-    DL_SYSCTL_enableSleepOnExit();
     _tim.timer_callback = callback;
 
     return true;

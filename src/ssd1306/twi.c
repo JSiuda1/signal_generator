@@ -20,7 +20,7 @@
 #include "ti/driverlib/dl_i2c.h"
 #include "ti_msp_dl_config.h"
 
-#define TWI_TX_MAX_PACKET_SIZE 512
+#define TWI_TX_MAX_PACKET_SIZE 100
 #define OLED_ADDRESS 0x3C
 
 typedef enum I2cControllerStatus {
@@ -112,7 +112,7 @@ static void __send_buffer(void) {
 
     if (DL_I2C_getControllerStatus(I2C_0_INST) &
         DL_I2C_CONTROLLER_STATUS_ERROR) {
-        __BKPT(0);
+        // __BKPT(0);
     }
 
     while (!(
